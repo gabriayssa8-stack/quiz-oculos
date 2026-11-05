@@ -389,6 +389,10 @@ function rPitch(){
 
 
 
+    <h3>Quem já está usando</h3>
+    <div class="vsl"><video id="dep" src="depoimentos.mp4" poster="depoimentos_capa.jpg" controls playsinline preload="metadata"></video></div>
+    <p class="cap">Toque no vídeo para ver e ouvir os clientes</p>
+
     ${fora?`<div class="warn">Ainda não entregamos na sua cidade. ${CONFIG.whatsapp?`<a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("Olá! Fiz o teste da visão e queria saber quando vocês vão entregar na minha cidade.")}" target="_blank" rel="noopener">Chame a gente no WhatsApp</a> pra ser ${g("avisado","avisada")} quando chegar.`:"Em breve vamos atender mais cidades."}</div>`:`
     <h3 id="esc">Escolha o modelo</h3>
     <div class="models">
@@ -405,9 +409,6 @@ function rPitch(){
     <div class="trust"><div>Pagamento só na entrega</div><div>Pix, dinheiro ou cartão</div><div>Entrega no dia que você escolher</div><div>Confirmação pelo WhatsApp</div></div>`}
 
 
-    <h3>Quem já está usando</h3>
-    <div class="vsl"><video id="dep" src="depoimentos.mp4" poster="depoimentos_capa.jpg" controls playsinline preload="metadata"></video></div>
-    <p class="cap">Toque no vídeo para ver e ouvir os clientes</p>
 
     <h3>Como vai ser</h3>
     <ol class="how">
