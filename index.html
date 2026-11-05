@@ -394,11 +394,7 @@ function rDiag(){
       <li>Passa <b>${CEL[A.celular]}</b> por dia em telas</li>
       <li>Há <b>${({pouco:"menos de 1 ano",medio:"1 a 3 anos",muito:"mais de 3 anos"})[A.tempo]}</b> com essa dificuldade</li>
     </ul></div>
-    ${longe?"":`<div class="ab">
-      <div class="a"><h4>😣 Hoje</h4><ul><li>${hojeExtra||"Força a vista"}</li><li>Letra embaça</li></ul></div>
-      <div class="b"><h4>😊 Com a lente</h4><ul><li>Lê sem esforço</li><li>Letra nítida</li></ul></div>
-    </div>`}
-    ${qualificado?`<div class="sol">✅ Seu caso tem solução: lente de leitura + filtro de luz azul. Simples e sem receita.</div>`:""}
+        ${qualificado?`<div class="sol">✅ Seu caso tem solução: lente de leitura + filtro de luz azul. Simples e sem receita.</div>`:""}
     ${d.length?`<div class="sol">✅ O filtro de luz azul ajuda a aliviar ${esc(lista(d.map(x=>DOR[x])))} nas horas de tela.</div>`:""}
     ${FOTOS([9,10,11])}
     <button class="btn go" onclick="next()">VER A MINHA INDICAÇÃO ➜</button>`);
@@ -438,10 +434,6 @@ function rPitch(){
     <div class="head">
       <span class="tag">Sua indicação</span>
       <h1>Este é o seu plano pra voltar a ler de perto sem esforço</h1>
-    </div>
-    <div class="ab">
-      <div class="a"><h4>😣 Sem a lente certa</h4><ul><li>Braço esticado pra ler</li><li>Depende dos outros</li><li>Olhos cansados</li></ul></div>
-      <div class="b"><h4>😊 Com o seu óculos</h4><ul><li>Lê na distância normal</li><li>Faz tudo ${g("sozinho","sozinha")}</li><li>Mais conforto nas telas</li></ul></div>
     </div>
 
     <h3>A solução indicada ${pra}</h3>
