@@ -561,7 +561,7 @@ function rForm(){
     const ok=["nome","whats","cep","num","rua","bairro","cidade"].every(k=>(v[k]||"").trim()) && v.whats.replace(/\D/g,"").length>=10 && dia;
     if(!ok){document.getElementById("errf").style.display="block";return;}
     st.nome=v.nome; st.whats=v.whats; st.end=v; st.dia=dia;
-    const msg=`Olá! Quero agendar minha entrega 👓\n\n*Pedido:* ${o.titulo} - R$ ${o.preco}\n*Modelo:* ${st.modelo}\n\n*CEP:* ${v.cep}\n*WhatsApp:* ${v.whats}\n*Nome:* ${v.nome}\n*Endereço:* ${v.rua}\n*Número:* ${v.num}\n*Bairro:* ${v.bairro}\n*Cidade:* ${v.cidade}${v.ref?`\n*Complemento:* ${v.ref}`:""}\n*Dia da entrega:* ${dia}${UTM.utm_content||UTM.utm_campaign?`\n\n_Anúncio: ${(UTM.utm_content||"-").split("|")[0]} · ${(UTM.utm_campaign||"-").split("|")[0]}_`:""}\n\n_Idade: ${({"18a29":"18-29","30a39":"30-39","40a49":"40-49","50a59":"50-59","60a69":"60-69","70":"70+"})[A.idade]||"-"}_`;
+    const msg=`Olá! Quero agendar minha entrega.\n\n*Pedido:* ${o.titulo} - R$ ${o.preco}\n*Modelo:* ${st.modelo}\n\n*CEP:* ${v.cep}\n*WhatsApp:* ${v.whats}\n*Nome:* ${v.nome}\n*Endereço:* ${v.rua}\n*Número:* ${v.num}\n*Bairro:* ${v.bairro}\n*Cidade:* ${v.cidade}${v.ref?`\n*Complemento:* ${v.ref}`:""}\n*Dia da entrega:* ${dia}`;
     st.wa = CONFIG.whatsapp ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}` : null;
     hook("lead"); hook("pedido",{oferta:o.titulo,preco:o.preco,modelo:st.modelo,dia,endereco:v});
     px("Purchase",{value:+o.preco.replace(",","."),currency:"BRL",faixa_idade:A.idade,sexo:A.sexo});
