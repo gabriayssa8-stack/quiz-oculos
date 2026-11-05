@@ -103,8 +103,12 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .offer .rib{position:absolute;top:-13px;right:14px;background:#E8562A;color:#fff;font-size:13px;font-weight:800;padding:4px 10px;border-radius:99px}
 .offer .t{font-size:21px;font-weight:800;color:var(--navy)}
 .offer .d{font-size:16px;color:var(--muted);margin:2px 0 8px}
-.offer .p{font-size:30px;font-weight:900;color:var(--green2)}
+.offer .p{font-size:40px;line-height:1.1;font-weight:900;color:var(--green2)}
 .offer .p s{font-size:17px;color:#98a2ab;font-weight:600;margin-right:6px}
+.offer .ate{font-size:16px;color:var(--muted);font-weight:700;margin-top:4px}
+.offer .p .rs{font-size:24px}
+.offer .vista{font-size:18px;color:var(--ink);margin:2px 0 4px}
+.offer .vista s{color:#98a2ab;font-size:16px}
 .offer .u{font-size:15px;color:var(--muted)}
 .trust{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
 .trust div{background:#fff;border-radius:12px;padding:10px;font-size:15px;text-align:center;border:1px solid var(--line)}
@@ -409,8 +413,9 @@ function rPitch(){
     ${[2,1].map(k=>{const o=OFFERS[k];return `<div class="offer ${st.oferta==k?"sel":""}" data-o="${k}">
       ${k==2?'<span class="rib">MAIS ESCOLHIDO</span>':""}
       <div class="t">${o.titulo}</div><div class="d">${o.desc}</div>
-      <div class="p">${o.de?`<s>R$ ${o.de}</s>`:""}R$ ${o.preco}</div>
-      <div class="u">ou em até <b>12x de R$ ${parcela(o.preco,12)}</b> no cartão</div>
+      <div class="ate">em até</div>
+      <div class="p">12x <span class="rs">R$</span> ${parcela(o.preco,12)}</div>
+      <div class="vista">ou ${o.de?`<s>R$ ${o.de}</s> `:""}<b>R$ ${o.preco}</b> à vista</div>
       ${k==2?'<div class="u">Sai cada um por R$ 124,95</div>':""}</div>`}).join("")}
     <details><summary>Ver todas as parcelas no cartão</summary>
       <table class="parc"><tr><th></th><th>2 Óculos</th><th>1 Óculos</th></tr>
