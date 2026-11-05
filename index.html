@@ -561,7 +561,10 @@ function rForm(){
     const ok=["nome","whats","cep","num","rua","bairro","cidade"].every(k=>(v[k]||"").trim()) && v.whats.replace(/\D/g,"").length>=10 && dia;
     if(!ok){document.getElementById("errf").style.display="block";return;}
     st.nome=v.nome; st.whats=v.whats; st.end=v; st.dia=dia;
-    const msg=`Olá! Quero agendar minha entrega.\n\n*Pedido:* ${o.titulo} - R$ ${o.preco}\n*Modelo:* ${st.modelo}\n\n*CEP:* ${v.cep}\n*WhatsApp:* ${v.whats}\n*Nome:* ${v.nome}\n*Endereço:* ${v.rua}\n*Número:* ${v.num}\n*Bairro:* ${v.bairro}\n*Cidade:* ${v.cidade}${v.ref?`\n*Complemento:* ${v.ref}`:""}\n*Dia da entrega:* ${dia}`;
+    const codigo="VL"+Date.now().toString(36).toUpperCase().slice(-6);
+    try{ fetch("/api/utmify",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({codigo,oferta:st.oferta,nome:v.nome,whats:v.whats,utm:UTM})}).catch(()=>{}); }catch(_){}
+    const msg=`Olá! Quero agendar minha entrega.\n\n*Pedido:* ${o.titulo} - R$ ${o.preco}\n*Modelo:* ${st.modelo}\n\n*CEP:* ${v.cep}\n*WhatsApp:* ${v.whats}\n*Nome:* ${v.nome}\n*Endereço:* ${v.rua}\n*Número:* ${v.num}\n*Bairro:* ${v.bairro}\n*Cidade:* ${v.cidade}${v.ref?`\n*Complemento:* ${v.ref}`:""}\n*Dia da entrega:* ${dia}\n*Código:* ${codigo}`;
     st.wa = CONFIG.whatsapp ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}` : null;
     hook("lead"); hook("pedido",{oferta:o.titulo,preco:o.preco,modelo:st.modelo,dia,endereco:v});
     px("Purchase",{value:+o.preco.replace(",","."),currency:"BRL",faixa_idade:A.idade,sexo:A.sexo});
