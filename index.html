@@ -319,8 +319,19 @@ function next(){ go(cur+1); }
 function prevQ(){ let i=cur-1; while(i>0 && (!S[i].q || !vis(i))) i--; cur=Math.max(i,0); fixbox.innerHTML=""; render(); window.scrollTo(0,0); }
 function screen(html){ app.innerHTML=`<div class="screen">${html}</div>`; }
 
+const _vistos = {};
+function etapa(){
+  const s=S[cur]; let nome;
+  if(s.q){ nome=s.id; }
+  else { const n=S.slice(0,cur+1).filter(x=>x.type===s.type).length; nome=s.type+(["ins","loading"].includes(s.type)?n:""); }
+  const num=S.slice(0,cur+1).filter((x,i)=>vis(i)).length;
+  const ev=`Etapa_${String(num).padStart(2,"0")}_${nome}`;
+  if(_vistos[ev]) return; _vistos[ev]=1;
+  try{ if(window.fbq) fbq("trackCustom", ev, {etapa:num, nome}); }catch(e){}
+}
 function render(){
   setBar();
+  etapa();
   const s=S[cur];
   if(s.q) return rQ(s);
   ({ins:rIns,loading:rLoad,diag:rDiag,capture:rCap,pitch:rPitch,form:rForm,ok:rOk})[s.type](s);
