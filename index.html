@@ -105,6 +105,13 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .offer .d{font-size:16px;color:var(--muted);margin:2px 0 8px}
 .offer .p{font-size:40px;line-height:1.1;font-weight:900;color:var(--green2)}
 .offer .p s{font-size:17px;color:#98a2ab;font-weight:600;margin-right:6px}
+.need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
+.need h2{font-size:23px}
+.need>p{color:var(--muted);margin-bottom:12px}
+.par{margin-bottom:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.par .dor{background:#FDECEA;color:#8a2a1f;padding:11px 14px;font-size:18px;font-weight:600}
+.par .sol2{background:#E6F6EC;color:#0f5c2e;padding:11px 14px;font-size:18px}
+.par .sol2:before{content:"✓  ";font-weight:800}
 .offer .ate{font-size:16px;color:var(--muted);font-weight:700;margin-top:4px}
 .offer .p .rs{font-size:24px}
 .offer .vista{font-size:18px;color:var(--ink);margin:2px 0 4px}
@@ -245,8 +252,7 @@ const S = [
   {id:"regiao", bloco:"Entrega", q:"Em qual cidade você mora?",
    opts:CIDADES.map(c=>[c,"",c]).concat([["outra","","Outra cidade"]]),
    fb:v=>v==="outra"?"Ainda não entregamos na sua cidade, mas você pode ver o resultado do seu teste.":`Entregamos em <b>${esc(v)}</b>, e você só paga quando receber.`},
-  {type:"loading", titulo:"Analisando suas respostas", itens:["Sua dificuldade para ler","Seu uso de telas","Seu perfil de visão","A entrega na sua cidade"]},
-  {type:"diag"},
+  {type:"loading", titulo:"Preparando o resultado do seu teste", itens:["Sua dificuldade para ler","Seu esforço nas telas","Seu perfil de visão","A entrega na sua cidade"]},
   {type:"pitch"},
   {type:"form"},
   {type:"ok"}
@@ -272,7 +278,7 @@ function etapa(){
   if(s.q){ nome=s.id; }
   else { const n=S.slice(0,cur+1).filter(x=>x.type===s.type).length; nome=s.type+(["ins","loading"].includes(s.type)?n:""); }
   const num=S.slice(0,cur+1).filter((x,i)=>vis(i)).length;
-  const ev=`V3_Etapa_${String(num).padStart(2,"0")}_${nome}`;
+  const ev=`V4_Etapa_${String(num).padStart(2,"0")}_${nome}`;
   if(_vistos[ev]) return; _vistos[ev]=1;
   try{ if(window.fbq) fbq("trackCustom", ev, {etapa:num, nome}); }catch(e){}
 }
@@ -381,13 +387,30 @@ function rPitch(){
                A.dificuldade==="telas"?"Sente o esforço da vista nas telas":"Sente dificuldade pra enxergar de perto",
                doeu().length?`Sente ${lista(doeu().map(x=>DOR[x]))} nas telas — o filtro de luz azul ajuda`:null,
                !fora?`Mora em ${esc(A.regiao)}, onde fazemos entrega`:null ].filter(Boolean);
+  const nv=nivel(), d=doeu(), mom=(A.momentos||[]).map(m=>MOM[m]);
+  const pares=[
+    A.dificuldade!=="telas"?["Você precisa afastar o celular ou o papel para conseguir ler","A lente de leitura deixa a letra nítida na distância normal, sem esticar o braço"]:null,
+    A.dificuldade!=="perto"?["Sua vista cansa e arde no celular e na TV","O filtro de luz azul deixa as telas mais confortáveis para os olhos"]:null,
+    mom.length?[`As letras pequenas atrapalham em: ${esc(lista(mom))}`,"Você volta a ler tudo isso sem pedir ajuda"]:null,
+    d.length?[`Você sente ${esc(lista(d.map(x=>DOR[x])))}`,"Com a vista sem forçar, esse incômodo tende a aliviar"]:null,
+    A.usa==="farmacia"?["Seus óculos de farmácia não têm proteção para telas","O Visão Leve tem lente de leitura e filtro de luz azul no mesmo óculos"]:null
+  ].filter(Boolean);
   screen(`
     <div class="head">
-      <span class="tag">Sua indicação</span>
-      <h1>A solução indicada para voltar a ler de perto sem esforço</h1>
+      <span class="tag">Resultado do seu teste</span>
+      <h2>${A.dificuldade==="telas"||jovem()?"Cansaço visual das telas":"Vista cansada de perto"}</h2>
+      <p>Nível de esforço da sua vista: <b>${nv.nome}</b></p>
+      <div class="meter"><b id="mk" style="left:0%"></b></div>
+      <div class="meter-l"><span>Leve</span><span>Moderado</span><span>Alto</span></div>
     </div>
 
-    <h3>Óculos de leitura Visão Leve</h3>
+    <div class="need">
+      <h2>Seu resultado mostra que você precisa de um óculos de leitura</h2>
+      <p>Sem ele, sua vista continua forçando todos os dias. Veja o que muda no seu caso:</p>
+      ${pares.map(p=>`<div class="par"><div class="dor">${p[0]}</div><div class="sol2">${p[1]}</div></div>`).join("")}
+    </div>
+
+    <h3>A solução indicada para você: Óculos de leitura Visão Leve</h3>
     <div class="box ok"><ul>
       <li><b>Embaixo:</b> lente de leitura</li>
       <li><b>Em cima:</b> grau leve de descanso</li>
@@ -440,6 +463,8 @@ function rPitch(){
     <details><summary>Ajuda pra enxergar de longe?</summary><p>Ele é feito pra leitura e telas. A parte de cima tem um grau leve de descanso, pra você olhar pra frente sem tirar o óculos.</p></details>
     <div class="pad"></div>`);
 
+  setTimeout(()=>{const mk=document.getElementById("mk"); if(mk) mk.style.left=nv.pct+"%";},150);
+  px("ViewContent",{content_name:"Resultado e oferta"});
   if(fora) return;
   fixbox.innerHTML=`<div class="fix"><a class="btn go" id="cta" href="#">AGENDAR MINHA ENTREGA</a></div>`;
   const cta=document.getElementById("cta");
