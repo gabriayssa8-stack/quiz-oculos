@@ -163,8 +163,8 @@ const CONFIG = {
   // Links de venda da Hyppe de cada oferta (se preencher, o botão final vai direto pra eles)
   // Deixe VAZIO pra cliente mandar os dados no seu WhatsApp e você cadastrar na Hyppe.
   // Preencha só se quiser mandar a cliente direto pro link da Hyppe.
-  linkHyppe1: "",   // 1 un R$ 169,90: http://app.hyppe.com.br/venda-multiplos?produto=NDQ%3D&afiliado=MjUyOA%3D%3D&oferta=MTE5Mw%3D%3D
-  linkHyppe2: "",   // 2 un R$ 249,90: http://app.hyppe.com.br/venda-multiplos?produto=NDQ%3D&afiliado=MjUyOA%3D%3D&oferta=MjExNQ%3D%3D
+  linkHyppe1: "",   // (antigo) 1 un R$ 169,90: http://app.hyppe.com.br/venda-multiplos?produto=NDQ%3D&afiliado=MjUyOA%3D%3D&oferta=MTE5Mw%3D%3D
+  linkHyppe2: "",   // (antigo) 2 un R$ 249,90: http://app.hyppe.com.br/venda-multiplos?produto=NDQ%3D&afiliado=MjUyOA%3D%3D&oferta=MjExNQ%3D%3D
   // Webhook pra salvar os leads (Make, Zapier, planilha Google via Apps Script...). Opcional.
   // Recebe os dados quando a pessoa deixa nome+WhatsApp e quando agenda o pedido.
   webhook: "",
@@ -175,8 +175,8 @@ const CONFIG = {
   textoEntrega: "Entrega rápida na sua região"
 };
 const OFFERS = {
-  1:{preco:"169,90", de:null, titulo:"1 Óculos", desc:"Pra começar a ler sem esforço"},
-  2:{preco:"249,90", de:"339,80", titulo:"2 Óculos", desc:"Um pra você e outro pra quem você ama — ou um pra casa e outro pra bolsa"}
+  1:{preco:"149,90", de:null, titulo:"1 Óculos", desc:"Pra começar a ler sem esforço"},
+  2:{preco:"199,90", de:"299,80", titulo:"2 Óculos", desc:"Um pra você e outro pra quem você ama — ou um pra casa e outro pra bolsa"}
 };
 const TAXAS = {1:0,2:4.99,3:5.70,4:6.41,5:7.11,6:7.82,7:8.85,8:9.56,9:10.27,10:10.97,11:11.5,12:12};
 const brl = v => v.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".");
@@ -439,7 +439,7 @@ function rPitch(){
       <div class="ate">em até</div>
       <div class="p">12x <span class="rs">R$</span> ${parcela(o.preco,12)}</div>
       <div class="vista">ou ${o.de?`<s>R$ ${o.de}</s> `:""}<b>R$ ${o.preco}</b> à vista</div>
-      ${k==2?'<div class="u">Sai cada um por R$ 124,95</div>':""}</div>`}).join("")}
+      ${k==2?'<div class="u">Sai cada um por menos de R$ 100: <b>R$ 99,95</b></div>':""}</div>`}).join("")}
     <details><summary>Ver todas as parcelas no cartão</summary>
       <table class="parc"><tr><th></th><th>2 Óculos</th><th>1 Óculos</th></tr>
       ${Object.keys(TAXAS).map(n=>`<tr><td>${n}x</td><td>R$ ${parcela(OFFERS[2].preco,+n)}</td><td>R$ ${parcela(OFFERS[1].preco,+n)}</td></tr>`).join("")}</table>

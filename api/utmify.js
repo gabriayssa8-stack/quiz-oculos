@@ -3,8 +3,8 @@
 // Comissão por kit (opcional, em reais): COMISSAO_1 e COMISSAO_2.
 const URL_UTMIFY = "https://api.utmify.com.br/api-credentials/orders";
 const PRODUTOS = {
-  1: { id: "visao-leve-1", nome: "Óculos Visão Leve - 1 unidade", preco: 16990 },
-  2: { id: "visao-leve-2", nome: "Óculos Visão Leve - 2 unidades", preco: 24990 },
+  1: { id: "visao-leve-1", nome: "Óculos Visão Leve - 1 unidade", preco: 14990, comissao: 7345 },
+  2: { id: "visao-leve-2", nome: "Óculos Visão Leve - 2 unidades", preco: 19990, comissao: 10595 },
 };
 const utc = d => d.toISOString().slice(0, 19).replace("T", " ");
 const reais = v => (v ? Math.round(parseFloat(String(v).replace(",", ".")) * 100) : 0);
@@ -14,7 +14,7 @@ function montar(b, ip, teste) {
   const fone = String(b.whats || "").replace(/\D/g, "");
   const u = b.utm || {};
   const t = k => (u[k] ? String(u[k]).slice(0, 300) : null);
-  const com = reais(process.env["COMISSAO_" + (p.preco === 24990 ? 2 : 1)]) || p.preco;
+  const com = reais(process.env["COMISSAO_" + (p.preco === 19990 ? 2 : 1)]) || p.comissao;
   return {
     orderId: String(b.codigo || "VL" + Date.now()).slice(0, 40),
     platform: "Quiz Visão Leve",
