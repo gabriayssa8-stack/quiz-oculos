@@ -105,6 +105,11 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .offer .d{font-size:16px;color:var(--muted);margin:2px 0 8px}
 .offer .p{font-size:40px;line-height:1.1;font-weight:900;color:var(--green2)}
 .offer .p s{font-size:17px;color:#98a2ab;font-weight:600;margin-right:6px}
+.ja{display:block;width:100%;margin-top:14px;background:none;border:2px solid var(--navy);color:var(--navy);border-radius:14px;padding:13px;font:700 17px inherit;font-family:inherit;cursor:pointer}
+.sabia{display:block;margin-bottom:10px;padding:10px 12px;background:var(--soft);border-radius:10px;font-size:16px}
+.sabia2{background:var(--soft);border-left:4px solid var(--navy);border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:17px}
+.garante{background:#E6F6EC;border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin:6px 0 16px;font-size:17px;color:#0f5c2e}
+.garante b{display:block;font-size:19px;margin-bottom:4px}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
 .need>p{color:var(--muted);margin-bottom:12px}
@@ -198,6 +203,14 @@ const g = (m,f) => A.sexo==="mulher" ? f : m;          // concordância
 const doeu = () => (A.dores||[]).filter(x=>x!=="nada");
 const DOR = {olhos:"dor nos olhos",cabeca:"dor de cabeça",embaca:"vista embaçada",seco:"olhos secos",cansa:"vista cansada"};
 const jovem = () => A.idade==="18a29"||A.idade==="30a39";
+const HOOK = (()=>{ const a=((UTM.utm_content||"")+" "+(UTM.utm_campaign||"")).toLowerCase();
+  if(/dor|cabe/.test(a)) return "Dor de cabeça e vista cansada depois de ler ou mexer no celular?";
+  if(/bula/.test(a)) return "Não consegue mais ler a bula do remédio?";
+  if(/otica|ótica|cara/.test(a)) return "Óculos de ótica caro demais para você?";
+  if(/afasta|celular/.test(a)) return "Precisa afastar o celular para conseguir ler?";
+  if(/aguenta/.test(a)) return "Sua vista não aguenta mais ler de perto?";
+  return "Sua vista cansa para ler de perto?"; })();
+const salvo = (()=>{ try{ return JSON.parse(localStorage.getItem("vl_resp")||"null"); }catch(e){ return null; } })();
 const nome1 = () => esc((st.nome||"").trim().split(" ")[0]);
 const grauIdade = () => ({"40a49":"+1.50","50a59":"+2.00","60a69":"+2.50","70":"+2.50"})[A.idade]||null;
 const lista = arr => arr.length>1 ? arr.slice(0,-1).join(", ")+" e "+arr[arr.length-1] : (arr[0]||"");
@@ -217,6 +230,7 @@ function hook(tipo,extra){
 const FOTOS = idx => `<div class="strip">${idx.map(i=>`<img src="${IMG.c[i]}" alt="Cliente usando o óculos">`).join("")}</div><p class="cap">Clientes usando o Visão Leve</p>`;
 const pontos = arr => `<div class="pts">${arr.filter(Boolean).map(t=>`<div>${t}</div>`).join("")}</div>`;
 const SOL = t => `<div class="sol">${t}</div>`;
+const VCSABIA = `<span class="sabia"><b>Você sabia?</b> Com a idade, a lente natural do olho perde flexibilidade e fica mais difícil focar de perto. Isso se chama vista cansada (presbiopia) e é muito comum depois dos 40 anos.</span>`;
 const CIDADES = ["Goiânia","Aparecida de Goiânia","Senador Canedo","Trindade","Goianira","Anápolis","Goianápolis"];
 
 const S = [
@@ -231,7 +245,7 @@ const S = [
      "Esses sinais são comuns em quem força a vista nas telas. O <b>filtro de luz azul</b> deixa o uso do celular e da TV mais confortável."},
   {id:"idade", bloco:"Sobre você", q:"Qual a sua idade?",
    opts:[["18a29","","18 a 29 anos"],["30a39","","30 a 39 anos"],["40a49","","40 a 49 anos"],["50a59","","50 a 59 anos"],["60a69","","60 a 69 anos"],["70","","70 anos ou mais"]],
-   fb:v=>({"18a29":"Com tantas horas de celular, a vista cansa cada vez mais cedo.","30a39":"Nessa fase as telas já começam a cansar a vista.","40a49":"É a partir dos 40 que a visão de perto começa a falhar. Isso é natural e tem solução simples.","50a59":"Depois dos 50, a dificuldade com letras pequenas atinge quase todo mundo. E tem solução simples.","60a69":"Depois dos 60, a vista cansada é muito comum. E tem solução simples.","70":"Enxergar bem de perto faz toda a diferença na independência do dia a dia. E tem solução simples."})[v]},
+   fb:v=>VCSABIA+({"18a29":"Com tantas horas de celular, a vista cansa cada vez mais cedo.","30a39":"Nessa fase as telas já começam a cansar a vista.","40a49":"É a partir dos 40 que a visão de perto começa a falhar. Isso é natural e tem solução simples.","50a59":"Depois dos 50, a dificuldade com letras pequenas atinge quase todo mundo. E tem solução simples.","60a69":"Depois dos 60, a vista cansada é muito comum. E tem solução simples.","70":"Enxergar bem de perto faz toda a diferença na independência do dia a dia. E tem solução simples."})[v]},
   {type:"ins", render:()=>{
     const n=(A.momentos||[]).length, d=doeu(), telas=A.dificuldade==="telas";
     return `<h2>${telas?"O que você sente tem nome: cansaço visual":"O que você sente tem nome: vista cansada"}</h2>
@@ -252,6 +266,14 @@ const S = [
   {id:"regiao", bloco:"Entrega", q:"Em qual cidade você mora?",
    opts:CIDADES.map(c=>[c,"",c]).concat([["outra","","Outra cidade"]]),
    fb:v=>v==="outra"?"Ainda não entregamos na sua cidade, mas você pode ver o resultado do seu teste.":`Entregamos em <b>${esc(v)}</b>, e você só paga quando receber.`},
+  {id:"imagina", bloco:"Seu objetivo", q:"Imagine ler a bula, as mensagens e as letras pequenas sem esforço e sem pedir ajuda. O que mais mudaria para você?",
+   opts:[["indep","","Ter mais independência"],["paz","","Mais tranquilidade no dia a dia"],["vista","","A vista mais descansada"],["tudo","","Tudo isso"]],
+   fb:v=>"É exatamente esse o objetivo do óculos de leitura: você voltar a ler com conforto, sem depender de ninguém."},
+  {id:"sim1", bloco:"Seu objetivo", q:"Você concorda que enxergar bem de perto faz falta no seu dia a dia?",
+   opts:[["sim","","Sim, concordo"],["nao","","Não"]]},
+  {id:"sim2", bloco:"Seu objetivo", q:"Se você pudesse receber o óculos em casa e só pagar quando ele chegar na sua mão, você experimentaria?",
+   opts:[["sim","","Sim, experimentaria"],["talvez","","Talvez"]]},
+  {type:"nome"},
   {type:"loading", titulo:"Preparando o resultado do seu teste", itens:["Sua dificuldade para ler","Seu esforço nas telas","Seu perfil de visão","A entrega na sua cidade"]},
   {type:"pitch"},
   {type:"form"},
@@ -278,7 +300,7 @@ function etapa(){
   if(s.q){ nome=s.id; }
   else { const n=S.slice(0,cur+1).filter(x=>x.type===s.type).length; nome=s.type+(["ins","loading"].includes(s.type)?n:""); }
   const num=S.slice(0,cur+1).filter((x,i)=>vis(i)).length;
-  const ev=`V4_Etapa_${String(num).padStart(2,"0")}_${nome}`;
+  const ev=`V5_Etapa_${String(num).padStart(2,"0")}_${nome}`;
   if(_vistos[ev]) return; _vistos[ev]=1;
   try{ if(window.fbq) fbq("trackCustom", ev, {etapa:num, nome}); }catch(e){}
 }
@@ -287,7 +309,7 @@ function render(){
   etapa();
   const s=S[cur];
   if(s.q) return rQ(s);
-  ({ins:rIns,loading:rLoad,diag:rDiag,capture:rCap,pitch:rPitch,form:rForm,ok:rOk})[s.type](s);
+  ({ins:rIns,loading:rLoad,diag:rDiag,capture:rCap,pitch:rPitch,form:rForm,ok:rOk,nome:rNome})[s.type](s);
 }
 
 function rQ(s){
@@ -296,8 +318,9 @@ function rQ(s){
   const lbl=o=>typeof o[2]==="function"?o[2]():o[2];
   screen(`
     ${s.intro?`<span class="tag">Teste gratuito</span>
-      <h1>Sua vista cansa para ler de perto?</h1>
-      <p class="sub">Responda 7 perguntas rápidas e veja o resultado do seu teste e a solução indicada para o seu caso.</p>`
+      <h1>${HOOK}</h1>
+      <p class="sub">Faça o teste gratuito: responda perguntas rápidas e veja o resultado e a solução indicada para o seu caso.</p>
+      ${salvo?`<button class="ja" onclick="jaFiz()">Já fiz o teste — ver meu resultado</button>`:""}`
      :`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">${esc(s.bloco)}</span>`}
     <h2>${esc(s.q)}</h2>
     ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:""}
@@ -317,11 +340,22 @@ function rQ(s){
   if(!s.multi && val && s.fb){ document.getElementById("fbt").innerHTML=s.fb(val); fb.classList.add("on"); }
 }
 
+function rNome(){
+  screen(`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">Último passo</span>
+    <h2>Para preparar o seu resultado, como você se chama?</h2>
+    <form id="fn" class="form" style="margin-top:14px"><div class="f"><label>Seu nome</label><input name="n" autocomplete="given-name" value="${esc(st.nome||"")}" required></div>
+    <button class="btn go" type="submit">VER MEU RESULTADO</button></form>`);
+  document.getElementById("fn").onsubmit=e=>{ e.preventDefault(); const n=e.target.n.value.trim(); if(n.length<2){ e.target.n.focus(); return; }
+    st.nome=n; A.nome=n; px("Lead",{faixa_idade:A.idade}); next(); };
+}
+function jaFiz(){ Object.assign(A,salvo||{}); if(A.nome) st.nome=A.nome; const i=S.findIndex(x=>x.type==="pitch"); go(i); }
+
 function rIns(s){
   screen(`<div class="card center">${s.render()}<button class="btn go" onclick="next()">CONTINUAR</button></div>`);
 }
 
 function rLoad(s){
+  try{ localStorage.setItem("vl_resp",JSON.stringify(A)); }catch(e){}
   screen(`<div class="center"><div class="spin"></div><h2>${s.titulo}</h2><ul class="steps">${s.itens.map(t=>`<li>${t}</li>`).join("")}</ul></div>`);
   const lis=[...app.querySelectorAll(".steps li")]; let i=0;
   const t=setInterval(()=>{ if(i<lis.length){lis[i].classList.add("done");i++;} else {clearInterval(t); next();} },700);
@@ -405,10 +439,12 @@ function rPitch(){
     </div>
 
     <div class="need">
-      <h2>Seu resultado mostra que você precisa de um óculos de leitura</h2>
+      <h2>${nome1()?nome1()+", s":"S"}eu resultado mostra que você precisa de um óculos de leitura</h2>
       <p>Sem ele, sua vista continua forçando todos os dias. Veja o que muda no seu caso:</p>
       ${pares.map(p=>`<div class="par"><div class="dor">${p[0]}</div><div class="sol2">${p[1]}</div></div>`).join("")}
     </div>
+
+    <div class="sabia2"><b>Por que isso acontece?</b> Com a idade, a lente natural do olho perde flexibilidade e fica difícil focar de perto. O óculos de leitura faz esse trabalho por ela, e a letra volta a ficar nítida.</div>
 
     <h3>A solução indicada para você: Óculos de leitura Visão Leve</h3>
     <div class="box ok"><ul>
@@ -426,6 +462,7 @@ function rPitch(){
     <p class="cap">Toque no vídeo para ver e ouvir os clientes</p>
 
     ${fora?`<div class="warn">Ainda não entregamos na sua cidade. ${CONFIG.whatsapp?`<a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("Olá! Fiz o teste da visão e queria saber quando vocês vão entregar na minha cidade.")}" target="_blank" rel="noopener">Chame a gente no WhatsApp</a> para saber quando chegar.`:"Em breve vamos atender mais cidades."}</div>`:`
+    <div class="garante"><b>Sem risco para você</b>Você não paga nada agora. Só paga quando o óculos chegar na sua mão, direto ao entregador: Pix, dinheiro ou cartão.</div>
     <h3 id="esc">Escolha o modelo</h3>
     <div class="models">
       <div class="model ${st.modelo==="Dourado"?"sel":""}" data-m="Dourado"><img src="${IMG.dourado}" alt="Modelo Dourado">Dourado</div>
