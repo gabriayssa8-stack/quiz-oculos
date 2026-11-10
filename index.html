@@ -110,6 +110,11 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .sabia2{background:var(--soft);border-left:4px solid var(--navy);border-radius:12px;padding:16px 18px;margin:0 0 16px;font-size:20px;line-height:1.5}
 .garante{background:#E6F6EC;border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin:6px 0 16px;font-size:17px;color:#0f5c2e}
 .garante b{display:block;font-size:19px;margin-bottom:4px}
+.res{display:grid;gap:8px;margin-top:10px}
+.ou{text-align:center;color:var(--muted);font-weight:700;margin:22px 0 8px}
+.cepbox{display:flex;gap:8px}
+.cepbox .sel{margin-top:0;flex:1}
+.cepbox .btn{width:auto;padding:0 18px;margin:0}
 .sel{width:100%;font-size:20px;font-weight:600;font-family:inherit;padding:16px 14px;border:2px solid var(--navy);border-radius:14px;background:#fff;color:var(--ink);margin-top:8px}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
@@ -343,22 +348,34 @@ function rQ(s){
 }
 
 function rCidade(){
-  const v=A.regiao||"";
+  const LISTA=ENTREGA.flatMap(([_,uf,cs])=>cs.map(c=>c+" - "+uf));
   screen(`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">Entrega</span>
     <h2>Em qual cidade você mora?</h2>
-    <p class="hint">Toque abaixo e escolha a sua cidade</p>
-    <select id="cid" class="sel">
-      <option value="">Escolha a sua cidade</option>
-      ${ENTREGA.map(([est,uf,cs])=>`<optgroup label="${esc(est)}">${cs.map(c=>{const k=c+" - "+uf;return `<option value="${esc(k)}" ${v===k?"selected":""}>${esc(c)}</option>`}).join("")}</optgroup>`).join("")}
-      <optgroup label="Outra"><option value="outra" ${v==="outra"?"selected":""}>Minha cidade não está na lista</option></optgroup>
-    </select>
+    <p class="hint">Digite o nome da sua cidade</p>
+    <input id="busca" class="sel" placeholder="Ex.: Goiânia" autocomplete="off" value="">
+    <div id="res" class="res"></div>
+    <div class="ou">ou descubra pelo CEP</div>
+    <div class="cepbox"><input id="cepq" class="sel" inputmode="numeric" placeholder="Digite seu CEP" maxlength="9"><button class="btn go" id="cepb" type="button">BUSCAR</button></div>
+    <p class="hint" id="cepmsg"></p>
     <div class="fb" id="fb"><div class="who">Sobre a sua resposta</div><p id="fbt"></p><button class="btn go" onclick="next()">CONTINUAR</button></div>`);
-  const sel=document.getElementById("cid"), fb=document.getElementById("fb");
-  const show=()=>{ const x=sel.value; if(!x){fb.classList.remove("on");return;} A.regiao=x;
-    document.getElementById("fbt").innerHTML = x==="outra" ? "Ainda não entregamos na sua cidade, mas você pode ver o resultado do seu teste."
-      : `Entregamos em <b>${esc(x)}</b>, e você só paga quando receber.`;
+  const busca=document.getElementById("busca"), res=document.getElementById("res"), fb=document.getElementById("fb");
+  const escolher=(x,lista)=>{ A.regiao=x; res.innerHTML=""; busca.value=x;
+    document.getElementById("fbt").innerHTML = lista ? `Entregamos em <b>${esc(x)}</b>, e você só paga quando receber.`
+      : `Anotado: <b>${esc(x)}</b>. Vamos confirmar a entrega com você pelo WhatsApp.`;
     fb.classList.add("on"); setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),80); };
-  sel.onchange=show; if(v) show();
+  busca.oninput=()=>{ fb.classList.remove("on"); const q=norm(busca.value); if(q.length<2){res.innerHTML="";return;}
+    const achou=LISTA.filter(c=>norm(c).includes(q)).slice(0,6);
+    res.innerHTML = achou.length ? achou.map(c=>`<button class="opt" data-c="${esc(c)}"><span>${esc(c)}</span></button>`).join("")
+      : `<p class="hint">Não encontramos. Tente pelo CEP abaixo.</p>`;
+    res.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>escolher(b.dataset.c,true)); };
+  const cepq=document.getElementById("cepq"), msg=document.getElementById("cepmsg");
+  cepq.oninput=()=>{ let d=cepq.value.replace(/\D/g,"").slice(0,8); cepq.value=d.length>5?d.slice(0,5)+"-"+d.slice(5):d; };
+  document.getElementById("cepb").onclick=async()=>{ const d=cepq.value.replace(/\D/g,""); if(d.length!==8){ msg.textContent="Digite os 8 números do CEP."; return; }
+    msg.textContent="Buscando...";
+    try{ const j=await (await fetch(`https://viacep.com.br/ws/${d}/json/`)).json(); if(j.erro) throw 0;
+      msg.textContent=""; A.cepq=d; escolher(`${j.localidade} - ${j.uf}`, atende(j.localidade,j.uf));
+    }catch(_){ msg.textContent="Não achamos esse CEP. Confira os números ou digite o nome da cidade acima."; } };
+  if(A.regiao) escolher(A.regiao, LISTA.includes(A.regiao));
 }
 function rNome(){
   screen(`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">Último passo</span>
@@ -434,7 +451,7 @@ function rCap(){
 function maskTel(e){let d=e.target.value.replace(/\D/g,""); if(d.length>11&&d.startsWith("55")) d=d.slice(2); d=d.slice(0,11);e.target.value=d.length>6?`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`:d.length>2?`(${d.slice(0,2)}) ${d.slice(2)}`:d;}
 
 function rPitch(){
-  const longe=false, alto=false, fora=A.regiao==="outra";
+  const longe=false, alto=false, fora=false;
   const gr=CONFIG.mostrarGrau?grauIdade():null;
   const pra={casal:"pra você e pro seu par",pais:"pro seu pai ou sua mãe"}[A.pra]||"pra você";
   const qual=[ A.idade&&!jovem()?"Tem mais de 40 anos — a fase em que a vista cansada aparece":null,
@@ -583,6 +600,7 @@ function rForm(){
       msg.textContent="Endereço encontrado. Confira e coloque o número."; f.num.focus();
     }catch(_){ msg.textContent="Não achamos o CEP automaticamente — preencha o endereço abaixo."; }
   };
+  if(A.cepq && !f.cep.value){ f.cep.value=A.cepq; f.cep.dispatchEvent(new Event("input")); }
   f.onsubmit=e=>{e.preventDefault();
     const v=Object.fromEntries(new FormData(f));
     const ok=["nome","whats","cep","num","rua","bairro","cidade"].every(k=>(v[k]||"").trim()) && v.whats.replace(/\D/g,"").length>=10 && dia;
