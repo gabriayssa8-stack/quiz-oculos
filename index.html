@@ -105,11 +105,12 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .offer .d{font-size:16px;color:var(--muted);margin:2px 0 8px}
 .offer .p{font-size:40px;line-height:1.1;font-weight:900;color:var(--green2)}
 .offer .p s{font-size:17px;color:#98a2ab;font-weight:600;margin-right:6px}
-.ja{display:block;width:100%;margin-top:14px;background:none;border:2px solid var(--navy);color:var(--navy);border-radius:14px;padding:13px;font:700 17px inherit;font-family:inherit;cursor:pointer}
+.ja{display:block;width:100%;margin-top:14px;background:none;border:2px solid var(--navy);color:var(--navy);border-radius:14px;padding:13px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer}
 .sabia{display:block;margin-bottom:12px;padding:14px 16px;background:var(--soft);border-radius:12px;font-size:20px;line-height:1.5}
 .sabia2{background:var(--soft);border-left:4px solid var(--navy);border-radius:12px;padding:16px 18px;margin:0 0 16px;font-size:20px;line-height:1.5}
 .garante{background:#E6F6EC;border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin:6px 0 16px;font-size:17px;color:#0f5c2e}
 .garante b{display:block;font-size:19px;margin-bottom:4px}
+.sel{width:100%;font-size:20px;font-weight:600;font-family:inherit;padding:16px 14px;border:2px solid var(--navy);border-radius:14px;background:#fff;color:var(--ink);margin-top:8px}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
 .need>p{color:var(--muted);margin-bottom:12px}
@@ -231,7 +232,10 @@ const FOTOS = idx => `<div class="strip">${idx.map(i=>`<img src="${IMG.c[i]}" al
 const pontos = arr => `<div class="pts">${arr.filter(Boolean).map(t=>`<div>${t}</div>`).join("")}</div>`;
 const SOL = t => `<div class="sol">${t}</div>`;
 const VCSABIA = `<span class="sabia"><b>Você sabia?</b> Com a idade, a lente natural do olho perde flexibilidade e fica mais difícil focar de perto. Isso se chama vista cansada (presbiopia) e é muito comum depois dos 40 anos.</span>`;
-const CIDADES = ["Goiânia","Aparecida de Goiânia","Senador Canedo","Trindade","Goianira","Anápolis","Goianápolis"];
+const ENTREGA = [["Goiás", "GO", ["Goiânia", "Anápolis", "Aparecida de Goiânia", "Goianira", "Goianápolis", "Senador Canedo", "Trindade"]], ["São Paulo (capital, Grande SP e Baixada Santista)", "SP", ["São Paulo", "Arujá", "Barueri", "Caieiras", "Cajamar", "Carapicuíba", "Cotia", "Cubatão", "Diadema", "Embu das Artes", "Ferraz de Vasconcelos", "Francisco Morato", "Franco da Rocha", "Guarujá", "Guarulhos", "Itapecerica da Serra", "Itapevi", "Itaquaquecetuba", "Jandira", "Mauá", "Mogi das Cruzes", "Osasco", "Poá", "Praia Grande", "Santana de Parnaíba", "Santo André", "Santos", "Suzano", "São Bernardo do Campo", "São Caetano do Sul", "São Vicente", "Taboão da Serra"]], ["São Paulo (Campinas e região)", "SP", ["Campinas", "Americana", "Hortolândia", "Indaiatuba", "Itu", "Itupeva", "Jundiaí", "Louveira", "Paulínia", "Salto", "Santa Bárbara d'Oeste", "Santa Rita d'Oeste", "Sumaré", "Vinhedo"]], ["Rio de Janeiro", "RJ", ["Rio de Janeiro", "Duque de Caxias", "Itaboraí", "Mesquita", "Nilópolis", "Niterói", "Nova Iguaçu", "Petrópolis", "Queimados", "São Gonçalo", "São João de Meriti"]], ["Minas Gerais", "MG", ["Belo Horizonte", "Betim", "Contagem", "Ibirité", "Nova Lima", "Ribeirão das Neves", "Sabará", "Santa Luzia", "Sarzedo", "Vespasiano"]], ["Espírito Santo", "ES", ["Vitória", "Cariacica", "Serra", "Viana", "Vila Velha"]], ["Paraná", "PR", ["Curitiba", "Almirante Tamandaré", "Araucária", "Colombo", "Londrina", "Marialva", "Maringá", "Paiçandu", "Pinhais", "Sarandi", "São José dos Pinhais"]], ["Rio Grande do Sul", "RS", ["Porto Alegre", "Alvorada", "Cachoeirinha", "Canoas", "Esteio", "Gravataí", "Novo Hamburgo", "Sapucaia do Sul", "São Leopoldo", "Viamão"]], ["Bahia", "BA", ["Salvador", "Camaçari", "Lauro de Freitas", "Simões Filho"]], ["Pernambuco", "PE", ["Recife", "Abreu e Lima", "Camaragibe", "Jaboatão dos Guararapes", "Olinda", "Paulista"]], ["Ceará", "CE", ["Fortaleza", "Caucaia", "Eusébio", "Horizonte", "Itaitinga", "Maracanaú", "Maranguape", "Pacajus", "Pacatuba"]], ["Pará", "PA", ["Belém", "Ananindeua", "Marituba"]], ["Amazonas", "AM", ["Manaus"]]];
+const norm = t => (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z ]/g,"").trim();
+const ATENDE = new Set(ENTREGA.flatMap(([_,uf,cs])=>cs.map(c=>norm(c)+"|"+uf.toLowerCase())));
+const atende = (cidade,uf) => ATENDE.has(norm(cidade)+"|"+(uf||"").toLowerCase());
 
 const S = [
   {id:"dificuldade", bloco:"Sua visão", intro:true, q:"O que mais te incomoda hoje?",
@@ -263,9 +267,7 @@ const S = [
   {id:"trava", bloco:"Seu caso", q:"O que te impediu de resolver até hoje?",
    opts:[["preco","","Ótica é cara"],["tempo","","Falta de tempo"],["medo","","Medo de não servir"],["internet","","Medo de comprar pela internet"],["perde","","Vivo perdendo óculos"]],
    fb:v=>({preco:"O Visão Leve custa bem menos que uma ótica. E você só paga quando receber.",tempo:"Você não precisa sair de casa. O óculos é entregue no seu endereço, no dia que você escolher.",medo:"Ele tem lente de leitura na parte de baixo e grau leve na parte de cima. Basta mudar a direção do olhar.",internet:"Você não paga nada pela internet. O pagamento é feito direto ao entregador, quando o óculos chegar.",perde:"Por isso muita gente leva 2: um fica em casa e o outro na bolsa ou no carro."})[v]},
-  {id:"regiao", bloco:"Entrega", q:"Em qual cidade você mora?",
-   opts:CIDADES.map(c=>[c,"",c]).concat([["outra","","Outra cidade"]]),
-   fb:v=>v==="outra"?"Ainda não entregamos na sua cidade, mas você pode ver o resultado do seu teste.":`Entregamos em <b>${esc(v)}</b>, e você só paga quando receber.`},
+  {type:"cidade"},
   {id:"imagina", bloco:"Seu objetivo", q:"Imagine ler a bula, as mensagens e as letras pequenas sem esforço e sem pedir ajuda. O que mais mudaria para você?",
    opts:[["indep","","Ter mais independência"],["paz","","Mais tranquilidade no dia a dia"],["vista","","A vista mais descansada"],["tudo","","Tudo isso"]],
    fb:v=>"É exatamente esse o objetivo do óculos de leitura: você voltar a ler com conforto, sem depender de ninguém."},
@@ -309,7 +311,7 @@ function render(){
   etapa();
   const s=S[cur];
   if(s.q) return rQ(s);
-  ({ins:rIns,loading:rLoad,diag:rDiag,capture:rCap,pitch:rPitch,form:rForm,ok:rOk,nome:rNome})[s.type](s);
+  ({ins:rIns,loading:rLoad,diag:rDiag,capture:rCap,pitch:rPitch,form:rForm,ok:rOk,nome:rNome,cidade:rCidade})[s.type](s);
 }
 
 function rQ(s){
@@ -340,6 +342,24 @@ function rQ(s){
   if(!s.multi && val && s.fb){ document.getElementById("fbt").innerHTML=s.fb(val); fb.classList.add("on"); }
 }
 
+function rCidade(){
+  const v=A.regiao||"";
+  screen(`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">Entrega</span>
+    <h2>Em qual cidade você mora?</h2>
+    <p class="hint">Toque abaixo e escolha a sua cidade</p>
+    <select id="cid" class="sel">
+      <option value="">Escolha a sua cidade</option>
+      ${ENTREGA.map(([est,uf,cs])=>`<optgroup label="${esc(est)}">${cs.map(c=>{const k=c+" - "+uf;return `<option value="${esc(k)}" ${v===k?"selected":""}>${esc(c)}</option>`}).join("")}</optgroup>`).join("")}
+      <optgroup label="Outra"><option value="outra" ${v==="outra"?"selected":""}>Minha cidade não está na lista</option></optgroup>
+    </select>
+    <div class="fb" id="fb"><div class="who">Sobre a sua resposta</div><p id="fbt"></p><button class="btn go" onclick="next()">CONTINUAR</button></div>`);
+  const sel=document.getElementById("cid"), fb=document.getElementById("fb");
+  const show=()=>{ const x=sel.value; if(!x){fb.classList.remove("on");return;} A.regiao=x;
+    document.getElementById("fbt").innerHTML = x==="outra" ? "Ainda não entregamos na sua cidade, mas você pode ver o resultado do seu teste."
+      : `Entregamos em <b>${esc(x)}</b>, e você só paga quando receber.`;
+    fb.classList.add("on"); setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),80); };
+  sel.onchange=show; if(v) show();
+}
 function rNome(){
   screen(`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">Último passo</span>
     <h2>Para preparar o seu resultado, como você se chama?</h2>
@@ -540,7 +560,7 @@ function rForm(){
       <div class="f"><label>Número</label><input name="num" inputmode="numeric" required>
         <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;margin-top:8px;cursor:pointer"><input type="checkbox" id="sn" style="width:24px;height:24px;flex:none"> Sem número (S/N)</label></div>
       <div class="f"><label>Bairro</label><input name="bairro" required></div>
-      <div class="f"><label>Cidade</label><input name="cidade" autocomplete="address-level2" value="${A.regiao&&A.regiao!=="outra"?esc(A.regiao)+" - GO":""}" required></div>
+      <div class="f"><label>Cidade</label><input name="cidade" autocomplete="address-level2" value="${A.regiao&&A.regiao!=="outra"?esc(A.regiao):""}" required></div>
       <div class="f"><label>Complemento / ponto de referência (opcional)</label><input name="ref" placeholder="Ex: casa azul, ao lado da padaria"></div>
       <div class="f"><label>Escolha o dia da sua entrega</label>
         <div class="models" id="dias" style="grid-template-columns:1fr 1fr 1fr">${datas.map((d,i)=>`<div class="model" data-d="${d}" style="font-size:16px;padding:12px 6px">${d.replace(" ","<br>")}</div>`).join("")}</div>
@@ -560,7 +580,8 @@ function rForm(){
     try{ const r=await fetch(`https://viacep.com.br/ws/${d}/json/`); const j=await r.json();
       if(j.erro) throw 0;
       if(j.logradouro) f.rua.value=j.logradouro; if(j.bairro) f.bairro.value=j.bairro; if(j.localidade) f.cidade.value=`${j.localidade} - ${j.uf}`;
-      msg.textContent="Endereço encontrado. Confira e coloque o número."; f.num.focus();
+      if(j.localidade && !atende(j.localidade,j.uf)){ msg.textContent=`Atenção: ainda não entregamos em ${j.localidade} - ${j.uf}. Confira o CEP.`; msg.style.color="#b3261e"; }
+      else { msg.textContent="Endereço encontrado. Confira e coloque o número."; msg.style.color=""; f.num.focus(); }
     }catch(_){ msg.textContent="Não achamos o CEP automaticamente — preencha o endereço abaixo."; }
   };
   f.onsubmit=e=>{e.preventDefault();
