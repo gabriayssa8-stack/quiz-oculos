@@ -580,8 +580,7 @@ function rForm(){
     try{ const r=await fetch(`https://viacep.com.br/ws/${d}/json/`); const j=await r.json();
       if(j.erro) throw 0;
       if(j.logradouro) f.rua.value=j.logradouro; if(j.bairro) f.bairro.value=j.bairro; if(j.localidade) f.cidade.value=`${j.localidade} - ${j.uf}`;
-      if(j.localidade && !atende(j.localidade,j.uf)){ msg.textContent=`Atenção: ainda não entregamos em ${j.localidade} - ${j.uf}. Confira o CEP.`; msg.style.color="#b3261e"; }
-      else { msg.textContent="Endereço encontrado. Confira e coloque o número."; msg.style.color=""; f.num.focus(); }
+      msg.textContent="Endereço encontrado. Confira e coloque o número."; f.num.focus();
     }catch(_){ msg.textContent="Não achamos o CEP automaticamente — preencha o endereço abaixo."; }
   };
   f.onsubmit=e=>{e.preventDefault();
