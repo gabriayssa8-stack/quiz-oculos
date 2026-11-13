@@ -119,6 +119,11 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .cepbox .sel{margin-top:0;flex:1}
 .cepbox .btn{width:auto;padding:0 18px;margin:0}
 .sel{width:100%;font-size:20px;font-weight:600;font-family:inherit;padding:16px 14px;border:2px solid var(--navy);border-radius:14px;background:#fff;color:var(--ink);margin-top:8px}
+.wabox{margin-top:16px;background:#E8F8EE;border:2px solid #25D366;border-radius:16px;padding:14px 16px;text-align:center}
+.wabox b{display:block;font-size:19px;color:#0f5c2e}
+.wabox span{display:block;font-size:16px;color:var(--muted);margin:2px 0 10px}
+.wabox .ouq{margin:10px 0 0;font-weight:700;color:var(--navy)}
+.wabtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:#fff;font-weight:800;font-size:18px;border-radius:12px;padding:14px;text-decoration:none}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
 .need>p{color:var(--muted);margin-bottom:12px}
@@ -331,7 +336,13 @@ function rQ(s){
     ${s.intro?`<span class="tag">Teste gratuito</span>
       <h1>${HOOK}</h1>
       <p class="sub">Faça o teste gratuito: responda perguntas rápidas e veja o resultado e a solução indicada para o seu caso.</p>
-      ${salvo?`<button class="ja" onclick="jaFiz()">Já fiz o teste — ver meu resultado</button>`:""}`
+      ${salvo?`<button class="ja" onclick="jaFiz()">Já fiz o teste — ver meu resultado</button>`:""}
+      <div class="wabox"><b>Já quer fazer seu pedido ou tirar uma dúvida?</b>
+        <span>Fale direto com a gente, sem precisar responder nada.</span>
+        <a class="wabtn" href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("Olá! Vi o anúncio do óculos Visão Leve e quero fazer meu pedido / tirar uma dúvida.")}" target="_blank" rel="noopener" onclick="try{fbq('track','Contact')}catch(e){}">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg>
+        CHAMAR NO WHATSAPP</a>
+        <span class="ouq">ou faça o teste gratuito abaixo</span></div>`
      :`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">${esc(s.bloco)}</span>`}
     <h2>${esc(s.q)}</h2>
     ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:""}
