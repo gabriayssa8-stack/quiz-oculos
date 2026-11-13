@@ -225,6 +225,7 @@ const HOOK = (()=>{ const a=((UTM.utm_content||"")+" "+(UTM.utm_campaign||"")).t
   if(/aguenta/.test(a)) return "Sua vista não aguenta mais ler de perto?";
   return "Sua vista cansa para ler de perto?"; })();
 const salvo = (()=>{ try{ return JSON.parse(localStorage.getItem("vl_resp")||"null"); }catch(e){ return null; } })();
+const WA = txt => `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp}&text=${encodeURIComponent(txt)}`;
 const nome1 = () => esc((st.nome||"").trim().split(" ")[0]);
 const grauIdade = () => ({"40a49":"+1.50","50a59":"+2.00","60a69":"+2.50","70":"+2.50"})[A.idade]||null;
 const lista = arr => arr.length>1 ? arr.slice(0,-1).join(", ")+" e "+arr[arr.length-1] : (arr[0]||"");
@@ -344,7 +345,7 @@ function rQ(s){
       return `<button class="opt ${sel?"sel":""}" data-v="${esc(o[0])}">${o[1].startsWith("@")?`<img class="face" src="${IMG[o[1].slice(1)]}" alt="">`:(s.multi?"":'<span class="rd"></span>')}<span>${esc(lbl(o))}</span>${s.multi?'<span class="ck"></span>':""}</button>`;}).join("")}</div>
     ${s.intro?`<div class="wabox"><b>Prefere não responder o teste?</b>
         <span>Faça seu pedido ou tire suas dúvidas direto com a gente pelo WhatsApp.</span>
-        <a class="wabtn" href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("Olá! Vi o anúncio do óculos Visão Leve e quero fazer meu pedido / tirar uma dúvida.")}" target="_blank" rel="noopener" onclick="try{fbq('track','Contact')}catch(e){}">
+        <a class="wabtn" href="${WA("Olá! Vi o anúncio do óculos Visão Leve e quero fazer meu pedido / tirar uma dúvida.")}" onclick="try{fbq('track','Contact')}catch(e){}">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg>
         CHAMAR NO WHATSAPP</a></div>`:""}
     ${s.multi?`<div style="margin-top:16px"><button class="btn go" id="conf" ${selArr.length?"":"disabled style='opacity:.45'"}>CONFIRMAR</button></div>`:""}
@@ -512,7 +513,7 @@ function rPitch(){
     <div class="vsl"><video id="dep" src="depoimentos.mp4" poster="depoimentos_capa.jpg" controls playsinline preload="metadata"></video></div>
     <p class="cap">Toque no vídeo para ver e ouvir os clientes</p>
 
-    ${fora?`<div class="warn">Ainda não entregamos na sua cidade. ${CONFIG.whatsapp?`<a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("Olá! Fiz o teste da visão e queria saber quando vocês vão entregar na minha cidade.")}" target="_blank" rel="noopener">Chame a gente no WhatsApp</a> para saber quando chegar.`:"Em breve vamos atender mais cidades."}</div>`:`
+    ${fora?`<div class="warn">Ainda não entregamos na sua cidade. ${CONFIG.whatsapp?`<a href="${WA("Olá! Fiz o teste da visão e queria saber quando vocês vão entregar na minha cidade.")}">Chame a gente no WhatsApp</a> para saber quando chegar.`:"Em breve vamos atender mais cidades."}</div>`:`
     <div class="garante"><b>Sem risco para você</b>Você não paga nada agora. Só paga quando o óculos chegar na sua mão, direto ao entregador: Pix, dinheiro ou cartão.</div>
     <h3 id="esc">Escolha o modelo</h3>
     <div class="models">
@@ -624,10 +625,12 @@ function rForm(){
     try{ fetch("/api/utmify",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},
       body:JSON.stringify({codigo,oferta:st.oferta,nome:v.nome,whats:v.whats,utm:UTM})}).catch(()=>{}); }catch(_){}
     const msg=`Olá! Quero agendar minha entrega.\n\n*Pedido:* ${o.titulo} - R$ ${o.preco}\n*Modelo:* ${st.modelo}\n\n*CEP:* ${v.cep}\n*WhatsApp:* ${v.whats}\n*Nome:* ${v.nome}\n*Endereço:* ${v.rua}\n*Número:* ${v.num}\n*Bairro:* ${v.bairro}\n*Cidade:* ${v.cidade}${v.ref?`\n*Complemento:* ${v.ref}`:""}\n*Dia da entrega:* ${dia}`;
-    st.wa = CONFIG.whatsapp ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}` : null;
+    st.wa = CONFIG.whatsapp ? WA(msg) : null;
     hook("lead"); hook("pedido",{oferta:o.titulo,preco:o.preco,modelo:st.modelo,dia,endereco:v});
     px("Purchase",{value:+o.preco.replace(",","."),currency:"BRL",faixa_idade:A.idade,sexo:A.sexo});
-    next();};
+    next();
+    if(st.wa) setTimeout(()=>{ try{ window.location.href=st.wa; }catch(_){} }, 900);
+  };
 }
 
 function rOk(){
@@ -636,7 +639,8 @@ function rOk(){
     ${st.wa?`<span class="tag">Último passo</span><h2>Falta só enviar o seu pedido, ${nome1()}</h2><p class="sub" style="margin-top:8px">Toque no botão verde abaixo. O WhatsApp vai abrir com o seu pedido já escrito. É só apertar <b>enviar</b>.</p>`
            :`<h2>Entrega agendada, ${nome1()}!</h2><p class="sub" style="margin-top:8px">Em breve vamos chamar você no WhatsApp para confirmar o pedido.</p>`}
     <div class="sum" style="text-align:left">${o.titulo} · modelo ${esc(st.modelo)}<br>Entrega: <b>${esc(st.dia)}</b>, das 8h às 18h<br>Você paga <b>R$ ${o.preco}</b> só quando receber.</div>
-    ${st.wa?`<a class="btn go" href="${st.wa}" target="_blank" rel="noopener">ENVIAR MEU PEDIDO NO WHATSAPP</a>`:""}
+    ${st.wa?`<a class="btn go" href="${st.wa}">ENVIAR MEU PEDIDO NO WHATSAPP</a>
+    <p class="hint" style="margin-top:10px">Se o WhatsApp não abrir, chame a gente no <b>(${CONFIG.whatsapp.slice(2,4)}) ${CONFIG.whatsapp.slice(4,9)}-${CONFIG.whatsapp.slice(9)}</b> e mande uma foto desta tela.</p>`:""}
     <p class="hint" style="margin-top:14px">No dia da entrega, avisamos pelo WhatsApp quando o entregador sair. Deixe alguém em casa para receber.</p></div>`);
   document.getElementById("bar").style.width="100%";
 }
