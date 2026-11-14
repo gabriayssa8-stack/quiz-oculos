@@ -125,6 +125,7 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .wabox .ouq{margin:10px 0 0;font-weight:700;color:var(--navy)}
 .wabtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:#fff;font-weight:800;font-size:18px;border-radius:12px;padding:14px;text-decoration:none}
 .area{margin:10px 0 18px;font-size:16px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 12px}
+.passo{background:#FFF6DB;border:2px solid #F2C94C;border-radius:14px;padding:14px 16px;margin:14px 0 4px;font-size:18px;line-height:1.45}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
 .need>p{color:var(--muted);margin-bottom:12px}
@@ -603,7 +604,8 @@ function rForm(){
         <div class="models" id="dias" style="grid-template-columns:1fr 1fr 1fr">${datas.map((d,i)=>`<div class="model" data-d="${d}" style="font-size:16px;padding:12px 6px">${d.replace(" ","<br>")}</div>`).join("")}</div>
         <p class="hint" style="font-size:15px">Seu pedido chega <b>no dia que você escolher</b>, das 8h às 18h. A gente te avisa no WhatsApp quando o entregador estiver a caminho.</p></div>
       <p class="err" id="errf">Preencha todos os campos e escolha o dia da entrega.</p>
-      <button class="btn go" type="submit">CONFIRMAR AGENDAMENTO</button>
+      <div class="passo"><b>Importante:</b> ao tocar no botão abaixo, o WhatsApp vai abrir com o seu pedido já escrito. <b>Aperte o botão de enviar ➤</b> para confirmar. Sem isso, o pedido não chega até nós.</div>
+      <button class="btn go" type="submit">ENVIAR PEDIDO PELO WHATSAPP</button>
     </form>`);
   const f=document.getElementById("f");
   let dia=null;
@@ -641,7 +643,7 @@ function rForm(){
 function rOk(){
   const o=OFFERS[st.oferta];
   screen(`<div class="center">
-    ${st.wa?`<span class="tag">Último passo</span><h2>Falta só enviar o seu pedido, ${nome1()}</h2><p class="sub" style="margin-top:8px">Toque no botão verde abaixo. O WhatsApp vai abrir com o seu pedido já escrito. É só apertar <b>enviar</b>.</p>`
+    ${st.wa?`<span class="tag">Último passo</span><h2>Falta só enviar o seu pedido, ${nome1()}</h2><p class="sub" style="margin-top:8px">O seu pedido <b>só fica confirmado depois que você enviar a mensagem</b> no WhatsApp. Toque no botão verde e aperte <b>enviar ➤</b>.</p>`
            :`<h2>Entrega agendada, ${nome1()}!</h2><p class="sub" style="margin-top:8px">Em breve vamos chamar você no WhatsApp para confirmar o pedido.</p>`}
     <div class="sum" style="text-align:left">${o.titulo} · modelo ${esc(st.modelo)}<br>Entrega: <b>${esc(st.dia)}</b>, das 8h às 18h<br>Você paga <b>R$ ${o.preco}</b> só quando receber.</div>
     ${st.wa?`<a class="btn go" href="${st.wa}">ENVIAR MEU PEDIDO NO WHATSAPP</a>
