@@ -124,6 +124,7 @@ p.sub{color:var(--muted);margin-bottom:16px}
 .wabox span{display:block;font-size:16px;color:var(--muted);margin:2px 0 10px}
 .wabox .ouq{margin:10px 0 0;font-weight:700;color:var(--navy)}
 .wabtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:#fff;font-weight:800;font-size:18px;border-radius:12px;padding:14px;text-decoration:none}
+.area{margin:10px 0 18px;font-size:16px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 12px}
 .need{background:#fff;border:2px solid var(--navy);border-radius:18px;padding:20px 18px;margin-bottom:16px}
 .need h2{font-size:23px}
 .need>p{color:var(--muted);margin-bottom:12px}
@@ -337,6 +338,7 @@ function rQ(s){
     ${s.intro?`<span class="tag">Teste gratuito</span>
       <h1>${HOOK}</h1>
       <p class="sub">Faça o teste gratuito: responda perguntas rápidas e veja o resultado e a solução indicada para o seu caso.</p>
+      <p class="area"><b>Entrega com pagamento na entrega</b> em cidades de GO, SP, RJ, MG, ES, PR, RS, BA, PE, CE, PA e AM.</p>
       ${salvo?`<button class="ja" onclick="jaFiz()">Já fiz o teste — ver meu resultado</button>`:""}`
      :`<button class="back" onclick="prevQ()">← Voltar</button><span class="tag">${esc(s.bloco)}</span>`}
     <h2>${esc(s.q)}</h2>
@@ -375,13 +377,16 @@ function rCidade(){
     <div class="fb" id="fb"><div class="who">Sobre a sua resposta</div><p id="fbt"></p><button class="btn go" onclick="next()">CONTINUAR</button></div>`);
   const busca=document.getElementById("busca"), res=document.getElementById("res"), fb=document.getElementById("fb");
   const escolher=(x,lista)=>{ A.regiao=x; res.innerHTML=""; busca.value=x;
-    document.getElementById("fbt").innerHTML = lista ? `Entregamos em <b>${esc(x)}</b>, e você só paga quando receber.`
-      : `Anotado: <b>${esc(x)}</b>. Vamos confirmar a entrega com você pelo WhatsApp.`;
+    const bt=fb.querySelector(".btn"), fbt=document.getElementById("fbt");
+    if(lista){ fbt.innerHTML=`Entregamos em <b>${esc(x)}</b>, e você só paga quando receber.`; bt.style.display=""; }
+    else { delete A.regiao; bt.style.display="none";
+      fbt.innerHTML=`Ainda não entregamos em <b>${esc(x)}</b>. Estamos chegando em novas cidades!<br><br>Toque abaixo e a gente te avisa pelo WhatsApp quando começar a entregar aí.
+        <a class="wabtn" style="margin-top:12px" href="${WA("Olá! Moro em "+x+" e quero ser avisado(a) quando o óculos Visão Leve chegar na minha cidade.")}" onclick="try{fbq('trackCustom','Fora_da_area',{cidade:'${esc(x).replace(/'/g,"")}'})}catch(e){}">QUERO SER AVISADO(A)</a>`; }
     fb.classList.add("on"); setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),80); };
   busca.oninput=()=>{ fb.classList.remove("on"); const q=norm(busca.value); if(q.length<2){res.innerHTML="";return;}
     const achou=LISTA.filter(c=>norm(c).includes(q)).slice(0,6);
     res.innerHTML = achou.length ? achou.map(c=>`<button class="opt" data-c="${esc(c)}"><span>${esc(c)}</span></button>`).join("")
-      : `<p class="hint">Não encontramos. Tente pelo CEP abaixo.</p>`;
+      : `<p class="hint">Não encontramos essa cidade na nossa lista. Confira pelo CEP abaixo.</p>`;
     res.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>escolher(b.dataset.c,true)); };
   const cepq=document.getElementById("cepq"), msg=document.getElementById("cepmsg");
   cepq.oninput=()=>{ let d=cepq.value.replace(/\D/g,"").slice(0,8); cepq.value=d.length>5?d.slice(0,5)+"-"+d.slice(5):d; };
